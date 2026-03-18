@@ -11,7 +11,7 @@ const server = new McpServer({
 
 server.tool(
   "read_file",
-  "Read CLAUDE.md or DECISIONS.md from a target project folder",
+  "Read any file from a target project folder",
   {
     filePath: z.string().describe("Absolute path to the file to read"),
   },
@@ -31,10 +31,10 @@ server.tool(
 
 server.tool(
   "write_decisions",
-  "Append strategic decisions to CLAUDE.md in a target project folder",
+  "Append timestamped content to any file in a target project folder",
   {
-    filePath: z.string().describe("Absolute path to CLAUDE.md"),
-    decisions: z.string().describe("Compressed decisions to append"),
+    filePath: z.string().describe("Absolute path to the target file"),
+    decisions: z.string().describe("Content to append"),
   },
   async ({ filePath, decisions }) => {
     try {
@@ -47,6 +47,29 @@ server.tool(
     } catch (error) {
       return {
         content: [{ type: "text", text: `Error writing file: ${error}` }],
+      };
+    }
+  }
+);
+
+server.tool(
+  "create_file",
+  "Create a new file with given content, creating directories if needed",
+  {
+    filePath: z.string().describe("Absolute path to the file to create"),
+    content: z.string().describe("Full content to write to the file"),
+  },
+  async ({ filePath, content }) => {
+    try {
+      const dir = path.dirname(filePath);
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(filePath, content, "utf-8");
+      return {
+        content: [{ type: "text", text: `Successfully created ${filePath}` }],
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error creating file: ${error}` }],
       };
     }
   }
