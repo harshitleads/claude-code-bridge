@@ -81,3 +81,34 @@ the codebase]
 ## Vision & Mission
 [To be filled per project — what problem does this 
 solve and for whom?]
+### 2026-03-18
+## Vision & Mission
+Bridge between Claude Mac app (strategic reasoning) and Claude Code in Cursor (execution). Eliminates copy-paste handoff by writing structured context directly to CLAUDE.md so Claude Code starts every session fully oriented. Distributable — any Mac user with Claude Mac app and Cursor can run this locally.
+
+## Current Stack
+- TypeScript, Node.js, ESM modules
+- @modelcontextprotocol/sdk (Anthropic official MCP SDK)
+- zod (parameter validation)
+- Compiled to dist/index.js via tsc
+- Registered in Claude Mac app via ~/Library/Application Support/Claude/claude_desktop_config.json
+
+## What Was Built — 2026-03-17
+- MCP server with two tools: read_file and write_decisions
+- read_file: reads any file by absolute path
+- write_decisions: appends timestamped decisions to CLAUDE.md
+- Server compiles clean, registers in Claude Mac app as LOCAL DEV connector
+- Both tools visible and set to "Needs approval" in connector settings
+- Tested successfully — this entry written via write_decisions tool
+
+## Known Issues / Backlog
+- README not written yet — needed for distribution to other users
+- No .gitignore — node_modules will be pushed if not added
+- path import in index.ts unused — clean it up
+- Consider adding a third tool: list_files to see project structure
+
+## Next Tasks
+1. Add .gitignore (node_modules, dist)
+2. Write README with setup instructions for Mac users
+3. Push to GitHub
+4. Test read_file and write_decisions on harshit.ai project CLAUDE.md
+5. Share with Akhil
