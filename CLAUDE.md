@@ -120,3 +120,29 @@ Bridge between Claude Mac app (strategic reasoning) and Claude Code in Cursor (e
 - Show example of calling write_decisions with an actual file path
 - Add cadence guidance: CLAUDE.md updates rarely, DECISIONS.md updates every session
 - Add a "How to use" section showing what to say to Claude Mac app to trigger the tools
+
+### 2026-03-18
+### 2026-03-17 — Full build and ship session
+
+What was built:
+- MCP server with two tools: read_file and write_decisions
+- Compiled TypeScript, registered in Claude Mac app as LOCAL DEV connector
+- README written, revised three times, now live on GitHub
+- Shared with Akhil Neelam on LinkedIn
+
+Key decisions locked:
+- CLAUDE.md has two parts: permanent context (written once by user) and session log (written automatically by MCP bridge after every strategy session)
+- DECISIONS.md removed from scope entirely, not needed
+- .cursorrules added to every project so Cursor reads CLAUDE.md automatically at session start, no commands needed
+- CTO Project system prompt written with full path registry for all active projects
+- Auto-sync rules in system prompt make writes fully automatic, never manual
+
+Portfolio Website restructure completed:
+- Repo now lives at Portfolio Website/ directly, no longer nested inside portfolio-harshit-ai/
+- Git history preserved, GitHub remote unchanged, Vercel unaffected
+- .cursorrules added to portfolio project root
+
+Next:
+- Use the tool for a week before writing a LinkedIn post about it
+- Post angle: "I use two Claude instances and the handoff between them was the bottleneck. Here is how I fixed it."
+- Eval Studio still needs hosting and portfolio entry
