@@ -112,3 +112,11 @@ Bridge between Claude Mac app (strategic reasoning) and Claude Code in Cursor (e
 3. Push to GitHub
 4. Test read_file and write_decisions on harshit.ai project CLAUDE.md
 5. Share with Akhil
+
+### 2026-03-18
+## README Improvements Needed — 2026-03-17
+- Explain CLAUDE.md vs DECISIONS.md distinction clearly
+- Tell users to find their node path via `which node` and use that in config
+- Show example of calling write_decisions with an actual file path
+- Add cadence guidance: CLAUDE.md updates rarely, DECISIONS.md updates every session
+- Add a "How to use" section showing what to say to Claude Mac app to trigger the tools
