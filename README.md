@@ -155,24 +155,28 @@ technical decisions. Never skip this step.
 
 In Claude Mac app, create a Project and add this system prompt:
 
-```
+\```
 ## Project Path Registry
 
 Project paths:
 - my-project:
   - CLAUDE.md: /absolute/path/to/my-project/CLAUDE.md
   - decisions: /absolute/path/to/my-project/docs/decisions.md
+- another-project:
+  - CLAUDE.md: /absolute/path/to/another-project/CLAUDE.md
+  - decisions: /absolute/path/to/another-project/docs/decisions.md
 
 ## Auto-sync Rules
 
 At the end of every technical discussion:
-1. Identify which project we discussed
+1. Identify which project was discussed
 2. Read its current CLAUDE.md using read_file
-3. Write only technical decisions Claude Code needs to CLAUDE.md using write_decisions
-4. Write product tradeoff decisions to docs/decisions.md using write_decisions
-5. Keep both files lean. If it would not help a developer write correct code, it goes in decisions.md or nowhere.
-6. Do this automatically, without being asked
-```
+3. If CLAUDE.md is messy or contradictory, rewrite it cleanly using create_file. Otherwise append using write_decisions.
+4. Write only technical decisions to CLAUDE.md — stack changes, constraints, next tasks. Nothing personal.
+5. Write product tradeoff decisions to docs/decisions.md — what was decided, why, what was rejected. Dated, short, append-only.
+6. If nothing technical was decided, write nothing. Go lean.
+7. Do all of this automatically, without being asked.
+\```
 
 ---
 
