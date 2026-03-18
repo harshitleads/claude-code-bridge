@@ -8,19 +8,15 @@ A local MCP server that automatically captures decisions from your Claude Mac ap
 
 You use Claude Mac app to think through product decisions, architecture, and strategy. You use Cursor and Claude Code to build. Every time you switch between them, you lose context. You re-explain what was decided, what the constraints are, what to build next.
 
-This tool eliminates that. It writes a running log of your decisions into CLAUDE.md inside your project after every strategy session. Cursor reads it automatically. No copy-paste, no re-explaining.
+This tool eliminates that. After every strategy session, Claude writes the technical decisions into CLAUDE.md and the product decisions into docs/decisions.md inside your project. Cursor reads CLAUDE.md automatically. Anyone reading your repo can follow the product thinking in docs/decisions.md.
 
 ---
 
-## What Actually Happens
+## Two Files, Two Purposes
 
-CLAUDE.md is a file that lives at the root of your project. It has two parts:
+**CLAUDE.md** — technical context for Claude Code. Stack, architecture, code rules, and a log of technical decisions. Claude Code reads this at the start of every Cursor session via .cursorrules.
 
-**Permanent context** (you write once): your stack, your vision, your code hygiene rules. This rarely changes.
-
-**Session log** (the MCP bridge writes automatically): a running record of decisions made in each Claude Mac app strategy session. This is what the tool writes to constantly. Every session adds an entry. Over time, CLAUDE.md becomes a complete decision history that Claude Code can read and act on.
-
-The result: every time you open Cursor, Claude Code starts knowing what was decided yesterday, last week, or six months ago. No session starts from zero.
+**docs/decisions.md** — product decision log for humans. Why certain decisions were made, what tradeoffs were accepted, what alternatives were rejected. Useful for PMs and engineers reviewing your work. Append-only, never edited.
 
 ---
 
@@ -30,7 +26,8 @@ The result: every time you open Cursor, Claude Code starts knowing what was deci
 1. You strategize with Claude in Claude Mac app
              |
              v
-2. Claude writes session decisions to CLAUDE.md via the MCP bridge
+2. Claude writes technical decisions to CLAUDE.md
+   and product decisions to docs/decisions.md
    Automatically, at the end of every strategy session
              |
              v
@@ -47,7 +44,7 @@ The result: every time you open Cursor, Claude Code starts knowing what was deci
              v
 6. Next strategy session in Claude Mac app
    Claude reads the existing log, builds on top of it
-   The cycle repeats. The log grows. Context compounds.
+   The cycle repeats. Context compounds.
 ```
 
 ---
@@ -100,7 +97,7 @@ Add the mcpServers block:
 }
 ```
 
-Quit Claude Mac app (Cmd+Q) and reopen it. Go to Settings, then Connectors. You should see claude-code-bridge listed as LOCAL DEV with two tools: read_file and write_decisions.
+Quit Claude Mac app (Cmd+Q) and reopen it. Go to Settings, then Connectors. You should see claude-code-bridge listed as LOCAL DEV with three tools: read_file, write_decisions, and create_file.
 
 > If you do not see it, the most common causes are a wrong node path or a wrong path to dist/index.js.
 
@@ -110,9 +107,7 @@ Quit Claude Mac app (Cmd+Q) and reopen it. Go to Settings, then Connectors. You 
 
 ### Step 4: Create CLAUDE.md in your project
 
-Create a CLAUDE.md file at the root of your project. This is where everything gets written.
-
-Start with the permanent context sections you fill in once:
+Create a CLAUDE.md file at the root of your project:
 
 ```markdown
 ## Vision and Mission
@@ -122,31 +117,41 @@ What this project does and who it is for.
 Technologies, frameworks, deployment setup.
 
 ## Code Rules
-Any non-negotiable standards for this project.
+Non-negotiable standards for this project.
 
 ## Project Log
-The MCP bridge will append session decisions here automatically.
+Technical decisions appended here automatically via claude-code-bridge.
 ```
-
-> The Project Log section is what grows over time. Every strategy session in Claude Mac app adds a dated entry. Do not edit old entries, only append.
 
 ---
 
-### Step 5: Add .cursorrules to your project
+### Step 5: Create docs/decisions.md in your project
+
+```markdown
+# Product Decisions
+
+A running log of significant product decisions. Each entry records what was decided, why, and what alternatives were rejected. Append-only, never edit old entries.
+
+---
+```
+
+> This file is for product decisions and tradeoffs. It is public and intended for PMs and engineers reviewing your work.
+
+---
+
+### Step 6: Add .cursorrules to your project
 
 Create a .cursorrules file at the root of your project:
 
 ```
 Read CLAUDE.md at the start of every session before doing anything else.
-This file contains the project vision, stack, code rules, and a full log
-of every strategic decision made in this project. Never skip this step.
+This file contains the project vision, stack, code rules, and a log of
+technical decisions. Never skip this step.
 ```
-
-> Cursor reads .cursorrules automatically when it opens a workspace. Without this file, Claude Code ignores CLAUDE.md entirely. This is the step that closes the loop on the Cursor side.
 
 ---
 
-### Step 6: Add a system prompt to your Claude Mac app Project
+### Step 7: Add a system prompt to your Claude Mac app Project
 
 In Claude Mac app, create a Project and add this system prompt:
 
@@ -154,28 +159,30 @@ In Claude Mac app, create a Project and add this system prompt:
 ## Project Path Registry
 
 Project paths:
-- my-project: /absolute/path/to/my-project/CLAUDE.md
-- another-project: /absolute/path/to/another-project/CLAUDE.md
+- my-project:
+  - CLAUDE.md: /absolute/path/to/my-project/CLAUDE.md
+  - decisions: /absolute/path/to/my-project/docs/decisions.md
 
 ## Auto-sync Rules
 
 At the end of every technical discussion:
 1. Identify which project we discussed
 2. Read its current CLAUDE.md using read_file
-3. Compress the key decisions from this conversation into a dated entry
-4. Append them using write_decisions
-5. Do this automatically, without being asked
+3. Write only technical decisions Claude Code needs to CLAUDE.md using write_decisions
+4. Write product tradeoff decisions to docs/decisions.md using write_decisions
+5. Keep both files lean. If it would not help a developer write correct code, it goes in decisions.md or nowhere.
+6. Do this automatically, without being asked
 ```
-
-> This is the trigger. Without it, Claude does not know which project you are working on or when to write. With it, the sync is fully automatic. Every strategy session ends with CLAUDE.md updated.
 
 ---
 
 ## Tools
 
-**read_file** reads any file by absolute path. Claude uses this before writing so it never duplicates or contradicts what is already there.
+**read_file** reads any file by absolute path. Claude uses this before writing to avoid duplicating existing content.
 
-**write_decisions** appends a timestamped entry to CLAUDE.md. Takes a file path and the decisions text.
+**write_decisions** appends a timestamped entry to any file. Used for both CLAUDE.md and docs/decisions.md.
+
+**create_file** creates a new file with full content, creating directories if needed. Used for new ADR entries or any new project file.
 
 ---
 
