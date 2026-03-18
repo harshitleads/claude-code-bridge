@@ -1,6 +1,6 @@
 # claude-code-bridge
 
-A local MCP server that closes the loop between strategic thinking in Claude Mac app and code execution in Cursor — automatically, without copy-paste.
+A local MCP server that closes the loop between strategic thinking in Claude Mac app and code execution in Cursor, automatically, without copy-paste.
 
 ---
 
@@ -8,7 +8,7 @@ A local MCP server that closes the loop between strategic thinking in Claude Mac
 
 If you use Claude Mac app for strategy and Cursor for building, you have a handoff problem. Every time you switch tools, context gets lost. You re-explain decisions, re-establish what was built, and waste time on setup instead of building.
 
-This tool fixes that by creating a shared memory layer — a CLAUDE.md file in each project that Claude Mac app writes to and Cursor reads from automatically.
+This tool fixes that. After every strategy session in Claude Mac app, Claude writes what was decided into a CLAUDE.md file in your project. When you open Cursor, that context is already there. Claude Code starts oriented, not blank.
 
 ---
 
@@ -18,26 +18,26 @@ This tool fixes that by creating a shared memory layer — a CLAUDE.md file in e
 1. You strategize with Claude in Claude Mac app
              |
              v
-2. Claude writes decisions to CLAUDE.md via MCP bridge
-   (automatically, based on your system prompt)
+2. Claude writes session decisions to CLAUDE.md via MCP bridge
+   This happens automatically after every strategy session
              |
              v
 3. You open Cursor
              |
              v
 4. Cursor reads CLAUDE.md automatically via .cursorrules
-   Claude Code starts with full context — no commands needed
+   Claude Code starts with full context, no commands needed
              |
              v
 5. You build. Claude Code knows the stack, the decisions,
    the constraints. No re-explaining.
              |
              v
-6. Come back to Claude Mac app for the next strategy session
-   The cycle repeats. Context grows over time.
+6. Come back to Claude Mac app for the next session
+   The cycle repeats. Context grows with every session.
 ```
 
-Each step depends on the previous one. If you skip any setup step, the loop breaks.
+Each step depends on the previous one. If you skip any setup step, the loop breaks. Read every step carefully.
 
 ---
 
@@ -94,9 +94,9 @@ Replace the args path with the actual absolute path to your cloned repo.
 
 Quit Claude Mac app completely (Cmd+Q) and reopen it.
 
-Go to Settings → Connectors. You should see claude-code-bridge listed as LOCAL DEV with two tools: read_file and write_decisions.
+Go to Settings, then Connectors. You should see claude-code-bridge listed as LOCAL DEV with two tools: read_file and write_decisions.
 
-> **Why this matters:** This config file is how Claude Mac app discovers your MCP server at startup. Without it, Claude has no tools and cannot write to your files. If you do not see the LOCAL DEV badge, the server is not connected — double check your node path and repo path.
+> **Why this matters:** This config file is how Claude Mac app discovers your MCP server at startup. Without it, Claude has no tools and cannot write to your files. If you do not see the LOCAL DEV badge, the server is not connected. Double check your node path and repo path.
 
 ---
 
@@ -104,7 +104,7 @@ Go to Settings → Connectors. You should see claude-code-bridge listed as LOCAL
 
 ### Step 4: Add CLAUDE.md to your project
 
-Every project you want in the loop needs a CLAUDE.md file at its root. This is the shared memory file — Claude Mac app writes to it, Cursor reads from it.
+Every project you want in the loop needs a CLAUDE.md file at its root. Claude Mac app writes session decisions into this file after every strategy session. Cursor reads it at the start of every build session. This is the shared memory layer.
 
 Create one at your project root with at minimum:
 
@@ -119,10 +119,10 @@ Technologies, frameworks, deployment setup.
 Active tasks and known problems.
 
 ## Project Log
-Session summaries will be appended here over time.
+Session decisions will be appended here automatically after every strategy session.
 ```
 
-> **Why this matters:** CLAUDE.md is the memory layer. Without it there is nothing to write to or read from. The file compounds in value over time — every session adds context that makes the next session faster.
+> **Why this matters:** CLAUDE.md is the memory layer. Every strategy session adds to it. Every build session reads from it. The value compounds over time.
 
 ---
 
@@ -133,10 +133,10 @@ Create a file called .cursorrules at the root of your project:
 ```
 Read CLAUDE.md at the start of every session before doing anything else.
 This file contains the project vision, current stack, architecture decisions,
-code hygiene rules, and known issues. Never skip this step.
+code hygiene rules, and running session log. Never skip this step.
 ```
 
-> **Why this matters:** Cursor reads .cursorrules automatically every time it opens a workspace. Without this file, Claude Code starts every session completely blind. With it, Claude Code is oriented before you type a single word. This is what makes context loading automatic — no commands, no prompts.
+> **Why this matters:** Cursor reads .cursorrules automatically every time it opens a workspace. Without this file, Claude Code starts every session completely blind, even if CLAUDE.md is full of context. This one file is what closes the loop on the Cursor side.
 
 ---
 
@@ -161,28 +161,20 @@ At the end of every technical discussion:
 2. Read its current CLAUDE.md using read_file
 3. Compress the key decisions from our conversation
 4. Append them using write_decisions
-5. Do this automatically — never ask me to trigger it
+5. Do this automatically, never ask me to trigger it
 ```
 
 Replace the example paths with your actual absolute project paths. Add one line per project.
 
-> **Why this matters:** This system prompt is the trigger that makes everything automatic. Without it, Claude has no idea which project you are discussing or when to sync. The system prompt gives Claude standing instructions for every conversation inside the Project. You never have to ask Claude to update CLAUDE.md — it happens automatically at the end of every strategy session.
-
----
-
-## The Two Files Explained
-
-**CLAUDE.md** — permanent project intelligence. Stack, vision, constraints, architecture decisions, code hygiene rules. Claude Mac app appends to this automatically. Update it manually only when something fundamental changes about the project.
-
-**DECISIONS.md** (optional) — a separate session log. What was decided today, why, what is next. Useful if you want decisions kept separate from CLAUDE.md. Never edit old entries, only append new ones.
+> **Why this matters:** This system prompt is the trigger. Without it, Claude has no idea which project you are discussing or when to sync. With it, Claude reads the conversation, identifies what was decided, and writes a compressed summary to CLAUDE.md automatically after every session. You never have to ask. It just happens.
 
 ---
 
 ## Tools
 
-**read_file** — reads any file by absolute path. Claude uses this before writing to avoid duplicating or contradicting what is already there.
+**read_file** reads any file by absolute path. Claude uses this before writing to avoid duplicating or contradicting what is already there.
 
-**write_decisions** — appends timestamped decisions to CLAUDE.md. Takes a file path and the decisions text.
+**write_decisions** appends timestamped decisions to CLAUDE.md. Takes a file path and the decisions text.
 
 ---
 
