@@ -151,11 +151,15 @@ technical decisions. Never skip this step.
 
 ---
 
-### Step 7: Add a system prompt to your Claude Mac app Project
+### Step 7: Add instructions to your Claude Mac app Project
 
-In Claude Mac app, create a Project and add this system prompt:
+In Claude Mac app, create a Project for your work. Then open the Project settings and find the **Project instructions** field. This is separate from the Description field — the Description is just a label, while Project instructions are what Claude actually follows in every conversation.
 
-\```
+> Important: do not put this in the Description field. It must go in Project instructions for Claude to treat it as binding rules.
+
+Paste this into Project instructions:
+
+```
 ## Project Path Registry
 
 Project paths:
@@ -176,7 +180,9 @@ At the end of every technical discussion:
 5. Write product tradeoff decisions to docs/decisions.md — what was decided, why, what was rejected. Dated, short, append-only.
 6. If nothing technical was decided, write nothing. Go lean.
 7. Do all of this automatically, without being asked.
-\```
+```
+
+Replace the example paths with your actual absolute project paths. Add one line per project.
 
 ---
 
@@ -186,7 +192,7 @@ At the end of every technical discussion:
 
 **write_decisions** appends a timestamped entry to any file. Used for both CLAUDE.md and docs/decisions.md.
 
-**create_file** creates a new file with full content, creating directories if needed. Used for new ADR entries or any new project file.
+**create_file** creates a new file with full content, creating directories if needed. Used for new project files or rewriting messy files cleanly.
 
 ---
 
