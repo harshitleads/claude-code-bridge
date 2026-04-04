@@ -208,3 +208,7 @@ Replace the example paths with your actual absolute project paths. Add one line 
 ## The Short Version
 
 You strategize. Claude writes. Cursor reads. You build. Every session adds to the log. The context never resets.
+
+---
+
+Built by [Harshit Sharma](https://harshit.ai).
