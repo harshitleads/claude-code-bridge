@@ -2,10 +2,8 @@ node_modules/
 dist/
 .env
 *.log
+
+# AI workflow files
 .claude/
 .cursor/
 AGENTS.md
-.claude/
-.cursor/
-.claude/
-.cursor/
